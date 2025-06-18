@@ -1,151 +1,43 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using EasyGram.Data;
-using EasyGram.ViewModels;
-using Microsoft.EntityFrameworkCore;
+﻿using EasyGram.Data;
 using EasyGram.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace EasyGram.Controllers
 {
-    [Authorize]
-    public class PracticeController : Controller
+    public class LessonsController : Controller
     {
-        public readonly AppDbContext _context;
-        public readonly UserManager<Users> _userManager;
+        private readonly AppDbContext _context;
 
-        public PracticeController(AppDbContext context, UserManager<Users> userManager)
+        public LessonsController(AppDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
+        // Список уроков
         public async Task<IActionResult> Index()
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            var topics = await _context.Topics
-                .Include(t => t.Questions)
-                .OrderBy(t => t.Order)
+            var lessons = await _context.Lessons
+                .Include(l => l.Tasks)
                 .ToListAsync();
 
-            var totalQuestions = await _context.Questions.CountAsync();
-            var completedQuestions = await _context.UserProgresses
-                .Where(up => up.UserId == currentUser.Id && up.IsCorrect)
-                .CountAsync();
-
-            var progressPercentage = totalQuestions > 0 ? (completedQuestions * 100) / totalQuestions : 0;
-
-            var viewModel = new PracticeIndexViewModel
-            {
-                Topics = topics,    
-                ProgressPercentage = progressPercentage,
-                CompletedQuestions = completedQuestions,
-                TotalQuestions = totalQuestions
-            };
-
-            return View(viewModel);
+            return View(lessons);
         }
 
-        public async Task<IActionResult> StartTest(int topicId)
+        // Страница одного урока (с задачами и материалами)
+        public async Task<IActionResult> Details(int id)
         {
-            var topic = await _context.Topics
-                .Include(t => t.Questions)
-                .ThenInclude(q => q.Answers)
-                .FirstOrDefaultAsync(t => t.Id == topicId);
+            var lesson = await _context.Lessons
+                .Include(l => l.Tasks)
+                .Include(l => l.Materials)
+                .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (topic == null)
-            {
+            if (lesson == null)
                 return NotFound();
-            }
 
-            var questions = topic.Questions.OrderBy(q => q.Order).ToList();
-
-            var viewModel = new TestViewModel
-            {
-                Topic = topic,
-                Questions = questions,
-                CurrentQuestionIndex = 0
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CheckAnswer(int questionId, int answerId)
-        {
-            var question = await _context.Questions
-                .Include(q => q.Answers)
-                .FirstOrDefaultAsync(q => q.Id == questionId);
-
-            if (question == null)
-            {
-                return Json(new { success = false, message = "Вопрос не найден" });
-            }
-
-            var selectedAnswer = question.Answers.FirstOrDefault(a => a.Id == answerId);
-            var correctAnswer = question.Answers.FirstOrDefault(a => a.IsCorrect);
-            var isCorrect = selectedAnswer?.IsCorrect ?? false;
-            
-
-            var currentUser = await _userManager.GetUserAsync(User);
-            var existingProgress = await _context.UserProgresses
-                .FirstOrDefaultAsync(up => up.UserId == currentUser.Id && up.QuestionId == questionId);
-
-            if (existingProgress == null)
-            {
-                var userProgress = new UserProgress
-                {
-                    UserId = currentUser.Id,
-                    QuestionId = questionId,
-                    IsCompleted = true,
-                    IsCorrect = isCorrect, // Указываем правильность
-                    CompletedDate = DateTime.UtcNow
-                };
-                _context.UserProgresses.Add(userProgress);
-            }
-            else
-            {
-                if (!existingProgress.IsCorrect && isCorrect) // Обновляем при повторном ответе
-                {
-                    existingProgress.IsCorrect = true;
-                }
-                else if (existingProgress.IsCorrect && !isCorrect)
-                {
-                    existingProgress.IsCorrect = true;
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            return Json(new
-            {
-                success = true,
-                isCorrect = isCorrect,
-                explanation = question.Explanation,
-                correctAnswerText = correctAnswer.Text,
-                selectedAnswerText = selectedAnswer.Text
-            });
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> GetProgress()
-        {
-            var currentUser = await _userManager.GetUserAsync(User);
-            var totalQuestions = await _context.Questions.CountAsync();
-
-            var completedQuestions = await _context.UserProgresses // кол-во правильно выполненных
-                .Where(up => up.UserId == currentUser.Id && up.IsCorrect)
-                .CountAsync();
-
-            var progressPercentage = totalQuestions > 0 ? (completedQuestions * 100) / totalQuestions : 0;
-
-            return Json(new
-            {
-                progressPercentage,
-                completedQuestions,
-                totalQuestions
-            });
+            return View(lesson);
         }
     }
 }

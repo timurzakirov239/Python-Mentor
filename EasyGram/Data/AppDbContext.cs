@@ -16,6 +16,9 @@ namespace EasyGram.Data
         public DbSet<Answer> Answers { get; set; }
         public DbSet<UserProgress> UserProgresses { get; set; }
         public DbSet<ExamResult> ExamResults { get; set; }
+        public DbSet<Lesson> Lessons { get; set; }
+        public DbSet<TaskItem> TaskItems { get; set; }
+        public DbSet<Material> Materials { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

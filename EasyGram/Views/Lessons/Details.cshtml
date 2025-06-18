@@ -1,0 +1,24 @@
+﻿@model EasyGram.ViewModels.LessonTasksViewModel
+
+<h2>@Model.LessonTitle</h2>
+<p>@Model.LessonDescription</p>
+@if (Model.Deadline != null)
+{
+    <p><b>Дедлайн:</b> @Model.Deadline.Value.ToString("dd MMMM yyyy")</p>
+}
+
+<h3>Задачи</h3>
+@foreach (var task in Model.Tasks)
+{
+    <div>
+        <b>@task.TaskTitle</b> — @task.TaskDescription
+        @if (task.IsCompleted)
+        {
+            <span style="color:green;">✔ Выполнено</span>
+        }
+        else
+        {
+            <span style="color:red;">✘ Не выполнено</span>
+        }
+    </div>
+}
