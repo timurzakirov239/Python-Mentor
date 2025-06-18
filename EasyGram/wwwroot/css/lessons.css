@@ -1,0 +1,42 @@
+.lesson-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: box-shadow .2s;
+    margin-bottom: 1rem;
+}
+.lesson-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+.lesson-info h5 {
+    margin-bottom: .5rem;
+    font-weight: 600;
+}
+.lesson-progress {
+    width: 160px;
+    margin-right: 20px;
+}
+.lesson-progress .progress {
+    height: 12px;
+    border-radius: 7px;
+}
+.lesson-link {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #545be8;
+    color: #fff;
+    font-size: 1.25rem;
+    transition: background .2s;
+}
+.lesson-link:hover {
+    text-decoration: none;
+    background: #4c54ea;
+}
