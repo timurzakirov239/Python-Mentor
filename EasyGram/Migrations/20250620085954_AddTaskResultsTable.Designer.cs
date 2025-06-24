@@ -3,6 +3,7 @@ using System;
 using EasyGram.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EasyGram.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250620085954_AddTaskResultsTable")]
+    partial class AddTaskResultsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,30 +50,6 @@ namespace EasyGram.Migrations
                     b.ToTable("Answers");
                 });
 
-            modelBuilder.Entity("EasyGram.Models.Exam", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<TimeSpan>("Duration")
-                        .HasColumnType("interval");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Exams");
-                });
-
             modelBuilder.Entity("EasyGram.Models.ExamResult", b =>
                 {
                     b.Property<int>("Id")
@@ -79,25 +58,30 @@ namespace EasyGram.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ExamId")
+                    b.Property<int>("CorrectAnswers")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsPassed")
+                    b.Property<DateTime>("ExamDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Grade")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsCertificateIssued")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("Score")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Percentage")
+                        .HasColumnType("numeric");
 
-                    b.Property<DateTime>("SubmittedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("TotalQuestions")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExamId");
 
                     b.HasIndex("UserId");
 
@@ -414,61 +398,6 @@ namespace EasyGram.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ExamTask", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ExamId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MaxScore")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExamId");
-
-                    b.ToTable("ExamTasks");
-                });
-
-            modelBuilder.Entity("ExamTaskTest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ExamTaskId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ExpectedOutput")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Input")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExamTaskId");
-
-                    b.ToTable("ExamTaskTests");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -614,19 +543,11 @@ namespace EasyGram.Migrations
 
             modelBuilder.Entity("EasyGram.Models.ExamResult", b =>
                 {
-                    b.HasOne("EasyGram.Models.Exam", "Exam")
-                        .WithMany()
-                        .HasForeignKey("ExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EasyGram.Models.Users", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Exam");
 
                     b.Navigation("User");
                 });
@@ -713,28 +634,6 @@ namespace EasyGram.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ExamTask", b =>
-                {
-                    b.HasOne("EasyGram.Models.Exam", "Exam")
-                        .WithMany("ExamTasks")
-                        .HasForeignKey("ExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Exam");
-                });
-
-            modelBuilder.Entity("ExamTaskTest", b =>
-                {
-                    b.HasOne("ExamTask", "ExamTask")
-                        .WithMany("Tests")
-                        .HasForeignKey("ExamTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExamTask");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -786,11 +685,6 @@ namespace EasyGram.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EasyGram.Models.Exam", b =>
-                {
-                    b.Navigation("ExamTasks");
-                });
-
             modelBuilder.Entity("EasyGram.Models.Lesson", b =>
                 {
                     b.Navigation("Materials");
@@ -813,11 +707,6 @@ namespace EasyGram.Migrations
             modelBuilder.Entity("EasyGram.Models.Topic", b =>
                 {
                     b.Navigation("Questions");
-                });
-
-            modelBuilder.Entity("ExamTask", b =>
-                {
-                    b.Navigation("Tests");
                 });
 #pragma warning restore 612, 618
         }

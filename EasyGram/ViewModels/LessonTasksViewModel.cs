@@ -10,6 +10,7 @@ namespace EasyGram.ViewModels
         public string LessonDescription { get; set; }
         public DateTime? Deadline { get; set; }
         public List<TaskStatusViewModel> Tasks { get; set; }
+        public List<MaterialViewModel> Materials { get; set; }
     }
 
     public class TaskStatusViewModel
@@ -18,6 +19,16 @@ namespace EasyGram.ViewModels
         public string TaskTitle { get; set; }
         public string TaskDescription { get; set; }
         public int MaxScore { get; set; }
-        public bool IsCompleted { get; set; } // Важно!
+
+        // Добавлено для отображения зелёной галочки
+        public bool IsCompleted { get; set; }
+    }
+
+    public class MaterialViewModel
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Type { get; set; }
+        public string Url { get; set; }
     }
 }

@@ -1,0 +1,16 @@
+﻿@model EasyGram.Models.Material
+
+<div class="container mt-4">
+    <h1>@Model.Title</h1>
+    <hr />
+    @if (Model.Type == "text")
+    {
+        <div style="background:#f9f9f9; padding:2em; border-radius:1em;">
+            @Html.Raw(Model.Text)
+        </div>
+    }
+    else if (Model.Type == "video")
+    {
+        <a href="@Model.Url" target="_blank">Смотреть видео</a>
+    }
+</div>

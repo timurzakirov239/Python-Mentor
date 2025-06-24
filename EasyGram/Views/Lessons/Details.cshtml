@@ -1,24 +1,59 @@
 ﻿@model EasyGram.ViewModels.LessonTasksViewModel
 
-<h2>@Model.LessonTitle</h2>
-<p>@Model.LessonDescription</p>
-@if (Model.Deadline != null)
-{
-    <p><b>Дедлайн:</b> @Model.Deadline.Value.ToString("dd MMMM yyyy")</p>
-}
-
-<h3>Задачи</h3>
-@foreach (var task in Model.Tasks)
-{
-    <div>
-        <b>@task.TaskTitle</b> — @task.TaskDescription
-        @if (task.IsCompleted)
-        {
-            <span style="color:green;">✔ Выполнено</span>
-        }
-        else
-        {
-            <span style="color:red;">✘ Не выполнено</span>
-        }
+<div class="container mt-4">
+    <div class="row">
+        <!-- Левая колонка: Задания хз для чего-->
+        <div class="col-lg-7 col-md-12 mb-4">
+            <h2 class="mb-4" style="font-weight:700;">Задания</h2>
+            <div class="card shadow-sm" style="border-radius:18px;">
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var task in Model.Tasks)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center" style="font-size:1.1em;">
+                                <div>
+                                    @if (task.IsCompleted)
+                                    {
+                                        <i class="fa fa-check-circle" style="color:#18b218; margin-right:7px;"></i>
+                                    }
+                                    <a href="@Url.Action("Details", "Tasks", new { id = task.TaskId })" style="text-decoration:none; color:inherit;">
+                                        @task.TaskTitle
+                                    </a>
+                                </div>
+                                <span style="color:#222;">
+                                    Баллы: @task.MaxScore
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Правая колонка: Материалы -->
+        <div class="col-lg-5 col-md-12">
+            <h2 class="mb-4" style="font-weight:700;">Материалы</h2>
+            <ul class="list-group list-group-flush">
+                @foreach (var mat in Model.Materials)
+                {
+                    <li class="list-group-item" style="font-size:1.1em;">
+                        <b>@mat.Title</b>
+                        @if (mat.Type == "video")
+                        {
+                            <div>
+                                <a href="@mat.Url" target="_blank">Смотреть видео</a>
+                            </div>
+                        }
+                        else if (mat.Type == "text")
+                        {
+                            <div>
+                                <a href="@Url.Action("Details", "Materials", new { id = mat.Id })">
+                                    Читать теорию
+                                </a>
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
     </div>
-}
+</div>

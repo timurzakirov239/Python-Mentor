@@ -16,8 +16,17 @@ namespace EasyGram.Data
         public DbSet<Answer> Answers { get; set; }
         public DbSet<UserProgress> UserProgresses { get; set; }
         public DbSet<ExamResult> ExamResults { get; set; }
+
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<TaskItem> TaskItems { get; set; }
+        public DbSet<TaskResult> TaskResults { get; set; }
+        public DbSet<TaskTest> TaskTests { get; set; }
+        public DbSet<ExamTask> ExamTasks { get; set; }
+        public DbSet<ExamTaskTest> ExamTaskTests { get; set; }
+
+
+        public DbSet<Exam> Exams { get; set; }
+
         public DbSet<Material> Materials { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -47,6 +56,11 @@ namespace EasyGram.Data
                 .HasOne(up => up.Question)
                 .WithMany(q => q.UserProgresses)
                 .HasForeignKey(up => up.QuestionId);
+
+            builder.Entity<ExamTask>()
+            .HasOne(et => et.Exam)
+            .WithMany(e => e.ExamTasks)
+            .HasForeignKey(et => et.ExamId);
 
             builder.Entity<ExamResult>()
                 .HasOne(e => e.User)

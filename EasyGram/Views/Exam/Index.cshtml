@@ -1,56 +1,52 @@
-﻿@model EasyGram.ViewModels.Exam.ExamStartViewModel
+﻿@model IEnumerable<EasyGram.Models.Exam>
+
 @{
-    ViewData["Title"] = "О экзамене";
+    ViewBag.Title = "Экзамены";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header text-white">
-                    <h2 class="mb-0">Итоговый экзамен</h2>
-                </div>
-                <div class="card-body">
-                    <div class="exam-info">
-                        <h4>Информация об экзамене:</h4>
-                        <ul class="list-group list-group-flush">
-                            @* <li class="list-group-item">Количество тем: <strong>@Model.TotalTopics</strong></li> ??
-                            <li class="list-group-item">Вопросов из каждой темы: <strong>@Model.QuestionsPerTopic</strong></li>  ??*@
-                            <li class="list-group-item">Всего вопросов: <strong>@Model.TotalQuestions</strong></li>
-                            <li class="list-group-item">Количество попыток: <strong>Неограниченно</strong></li>
-                            <li class="list-group-item">Для успешного окончания экзамена, необходимо набрать <strong>70%</strong></li>
-                        </ul>
-                    </div>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Экзамены</h2>
 
-                    <div class="alert alert-warning exam-warning" role="alert">
-                        <p>Перед началом экзамена убедитесь, что вы хорошо изучили теоретический материал и прошли практические задания.</p>
-                    </div>
-                </div>
-                <div class="card-footer text-center">
-                    @if (ViewBag.IsExamAvailable)
-                    {
-                        <form asp-action="StartExam" method="post">
-                            <button type="submit" class="btn btn-reg_out btn-lg">
-                                <i class="fas fa-play"></i> Начать экзамен
-                            </button>
-                        </form>
-                    }
-                    else
-                    {
-                        <div class="alert alert-warning">
-                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Экзамен недоступен</h4>
-                            <p>
-                                Ваш прогресс по практике составляет менее 70%.<br>
-                                Для начала экзамена необходимо выполнить практические задания.
-                            </p>
-                            <hr>
-                            <a asp-controller="Practice" asp-action="Index" class="btn btn-reg_out">
-                                <i class="fas fa-tasks"></i> Перейти к практике
-                            </a>
-                        </div>
-                    }
-                </div>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">Экзамены пока не добавлены.</div>
+    }
+    else
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <table class="table table-bordered table-hover bg-white shadow rounded">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Название экзамена</th>
+                            <th>Описание</th>
+                            <th>Время</th>
+                            <th style="width: 170px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var exam in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <b>@exam.Title</b>
+                                </td>
+                                <td>
+                                    @exam.Description
+                                </td>
+                                <td>
+                                    @exam.Duration.ToString(@"hh\:mm")
+                                </td>
+                                <td>
+                                    <a class="btn btn-primary w-100" asp-action="Start" asp-route-id="@exam.Id">
+                                        Начать экзамен
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
+    }
 </div>

@@ -7,5 +7,6 @@ namespace EasyGram.ViewModels
         public Topic Topic { get; set; }
         public List<Question> Questions { get; set; }
         public int CurrentQuestionIndex { get; set; }
+
     }
 }
