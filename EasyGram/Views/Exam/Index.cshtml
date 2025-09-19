@@ -4,8 +4,8 @@
     ViewBag.Title = "Экзамены";
 }
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Экзамены</h2>
+<div class="container mt-4">
+    <h1 class="mb-4" style="font-weight:700;">Экзамены</h1>
 
     @if (!Model.Any())
     {
@@ -13,40 +13,39 @@
     }
     else
     {
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <table class="table table-bordered table-hover bg-white shadow rounded">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Название экзамена</th>
-                            <th>Описание</th>
-                            <th>Время</th>
-                            <th style="width: 170px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var exam in Model)
-                        {
-                            <tr>
-                                <td>
-                                    <b>@exam.Title</b>
-                                </td>
-                                <td>
-                                    @exam.Description
-                                </td>
-                                <td>
-                                    @exam.Duration.ToString(@"hh\:mm")
-                                </td>
-                                <td>
-                                    <a class="btn btn-primary w-100" asp-action="Start" asp-route-id="@exam.Id">
-                                        Начать экзамен
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+        foreach (var exam in Model)
+        {
+            var solved = 0; // Подставь сюда реальные данные!
+            var total = exam.ExamTasks?.Count() ?? 0;
+            var percent = total > 0 ? (int)Math.Round(solved * 100.0 / total) : 0;
+            <div class="lesson-card d-flex justify-content-between align-items-center p-4 mb-4" style="background:#fff; border-radius:20px; box-shadow:0 2px 14px rgba(44,89,164,0.07);">
+                <div>
+                    <div style="font-size:1.3em; font-weight:600;">@exam.Title</div>
+                    <div class="mt-2 mb-0 text-muted" style="font-size:1em;">
+                        <b>@solved</b>/<b>@total</b> задач зачтено
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-3" style="min-width:160px;">
+                    <div style="width:110px; height:10px; background:#eceff4; border-radius:6px; overflow:hidden; margin-right:12px;">
+                        <div style="width:@percent%; height:100%; background:#6c7fff; border-radius:6px;"></div>
+                    </div>
+                    <span style="color:#18b218; font-size:1.13em; font-weight:600; min-width:40px;">@percent&nbsp;%</span>
+                    <a asp-action="Start" asp-route-id="@exam.Id" class="btn btn-outline-primary ms-2 px-3 py-1"
+                       style="border-radius:8px; font-weight:500; font-size:1em;">Открыть</a>
+                </div>
             </div>
-        </div>
+        }
     }
 </div>
+
+<style>
+    .lesson-card {
+        border: none;
+        transition: box-shadow 0.18s;
+    }
+
+        .lesson-card:hover {
+            box-shadow: 0 8px 32px rgba(44,89,164,.11);
+            border: none;
+        }
+</style>
